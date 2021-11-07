@@ -1,10 +1,10 @@
 /*	Author: David Strathman
  *  Partner(s) Name:
  *	Lab Section: 022
- *	Assignment: Lab #10  Exercise #1
+ *	Assignment: Lab #10  Exercise #2
  *	Exercise Description: [optional - include for your own benefit]
  *
- *  Link to Vid: 
+  * Link to vid: 
  *
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.
@@ -73,9 +73,9 @@ void CombineLEDsSM() {
 }
 
 int main(void) {
-  unsigned long SM1_elapsedTime = 1000;
+  unsigned long SM1_elapsedTime = 300;
   unsigned long SM2_elapsedTime = 1000;
-  unsigned long SM3_elapsedTime = 1000;
+  unsigned long SM3_elapsedTime = 100;
   unsigned char timerPeriod = 50;
   DDRA = 0x00; PORTA = 0xFF; //A is input
   DDRB = 0xFF; PORTB = 0x00; //Set both to outputs
@@ -86,7 +86,7 @@ int main(void) {
   BlinkingLEDState = SM_LOOP2;
   CombineState = SM_LOOP3;
   while (1) {
-    if (SM1_elapsedTime >= 1000) {
+    if (SM1_elapsedTime >= 300) {
       ThreeLEDsSM();
       SM1_elapsedTime = 0;
     }
@@ -94,7 +94,7 @@ int main(void) {
       BlinkingLEDSM();
       SM2_elapsedTime = 0;
     }
-    if (SM3_elapsedTime >= 1000) {
+    if (SM3_elapsedTime >= 100) {
       CombineLEDsSM();
       SM3_elapsedTime = 0;
     }
