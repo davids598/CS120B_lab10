@@ -4,7 +4,7 @@
  *	Assignment: Lab #10  Exercise #4
  *	Exercise Description: [optional - include for your own benefit]
  *
- *  Link to Vid: https://youtu.be/muoMj1bEMs8
+ *  Link to Vid: https://youtu.be/B-infQdUtBg
  *
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.
@@ -29,7 +29,7 @@ const unsigned long timerPeriod = 1;
 const unsigned long periodBlinkLED = 1000;
 const unsigned long periodThreeLEDs = 300;
 const unsigned long periodCombineLEDs = 1;
-const unsigned long periodSpeaker = 2;
+const unsigned long periodSpeaker = 1;
 const unsigned long periodSpeakerFreq = 300;
 
 void TimerISR() {
