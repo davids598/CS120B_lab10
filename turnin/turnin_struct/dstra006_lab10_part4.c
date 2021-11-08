@@ -1,10 +1,10 @@
 /*	Author: David Strathman
  *  Partner(s) Name:
  *	Lab Section: 022
- *	Assignment: Lab #10  Exercise #1
+ *	Assignment: Lab #10  Exercise #4
  *	Exercise Description: [optional - include for your own benefit]
  *
- *  Link to Vid: https://youtu.be/s4tk8yld278
+ *  Link to Vid: https://youtu.be/muoMj1bEMs8
  *
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.
@@ -22,13 +22,15 @@ typedef struct task {
   int (*TickFct)(int); // Function to call for task's tick
 } task;
 
-task tasks[3];
+task tasks[5];
 
-const unsigned char tasksNum = 3;
-const unsigned long timerPeriod = 50;
+const unsigned char tasksNum = 5;
+const unsigned long timerPeriod = 1;
 const unsigned long periodBlinkLED = 1000;
-const unsigned long periodThreeLEDs = 1000;
-const unsigned long periodCombineLEDs = 1000;
+const unsigned long periodThreeLEDs = 300;
+const unsigned long periodCombineLEDs = 1;
+const unsigned long periodSpeaker = 2;
+const unsigned long periodSpeakerFreq = 300;
 
 void TimerISR() {
   unsigned char i;
@@ -44,6 +46,13 @@ void TimerISR() {
 //global variables
 unsigned char threeLEDS = 0x00;
 unsigned char blinkingLED = 0x00;
+unsigned char speaker = 0x00;
+unsigned char currA = 0;
+unsigned long counter = 0;
+unsigned long threshold = 0;
+unsigned char speakerA = 0;
+unsigned char sounds[] = {2, 3, 4, 5, 6, 7, 8, 9};
+signed char i = 0;
 
 enum ThreeLEDsStates { SM_LOOP };
 int ThreeLEDsSM(int state) {
@@ -88,6 +97,58 @@ int BlinkingLEDSM(int state) {
   return state;
 }
 
+enum SpeakerStates {SM_LOOP4};
+int Speaker(int state) {
+  switch (state) {
+    case SM_LOOP4:
+      state = SM_LOOP4;
+  }
+
+  switch (state) {
+    case SM_LOOP4:
+      threshold = sounds[i] * 2;
+      if (counter < threshold) {
+        counter++;
+      }
+      if (counter >= (threshold / 2)) {
+        if (counter >= threshold) {
+          counter = 0;
+        }
+        currA = ~PINA;
+        if ((currA & 0x04) == 0x04) {
+          speaker = 0x10;
+        }
+        else {
+          speaker = 0x00;
+        }
+      } else {
+        speaker = 0x00;
+      }
+   }
+   return state;
+}
+
+
+enum SpeakerFreqStates {SM_LOOP5};
+int SpeakerFreq(int state) {
+  switch (state) {
+    case SM_LOOP5:
+      state = SM_LOOP5;
+  }
+
+  switch (state) {
+    case SM_LOOP5:
+      speakerA = ~PINA;
+      if ((speakerA & 0x02) == 0x02 && i <= 6) {
+        i++;
+      }
+      else if ((speakerA & 0x01) == 0x01 && i >= 1) {
+        i--;
+      }
+  }
+  return state;
+}
+
 enum CombineStates {SM_LOOP3};
 int CombineLEDsSM(int state) {
   switch (state) {
@@ -97,7 +158,7 @@ int CombineLEDsSM(int state) {
 
   switch (state) {
     case SM_LOOP3:
-      PORTB = threeLEDS | blinkingLED;
+      PORTB = threeLEDS | blinkingLED | speaker;
   }
   return state;
 }
@@ -118,6 +179,16 @@ int main(void) {
     tasks[i].period = periodCombineLEDs;
     tasks[i].elapsedTime = tasks[i].period;
     tasks[i].TickFct = &CombineLEDsSM;
+    ++i;
+    tasks[i].state = SM_LOOP4;
+    tasks[i].period = periodSpeaker;
+    tasks[i].elapsedTime = tasks[i].period;
+    tasks[i].TickFct = &Speaker;
+    ++i;
+    tasks[i].state = SM_LOOP5;
+    tasks[i].period = periodSpeakerFreq;
+    tasks[i].elapsedTime = tasks[i].period;
+    tasks[i].TickFct = &SpeakerFreq;
 
     DDRA = 0x00; PORTA = 0xFF; //A is input
     DDRB = 0xFF; PORTB = 0x00; //Set both to outputs */
